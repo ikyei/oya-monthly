@@ -1,0 +1,12 @@
+{
+  "name": "oya-monthly",
+  "version": "1.0.0",
+  "description": "OYA Microcredit monthly report builder",
+  "main": "build.js",
+  "scripts": {
+    "build": "node build.js"
+  },
+  "dependencies": {
+    "pptxgenjs": "^3.12.0"
+  }
+}
