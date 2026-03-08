@@ -1,0 +1,44 @@
+name: Build OYA Monthly Report
+
+on:
+  push:
+    paths:
+      - 'data/**.json'
+  workflow_dispatch:
+    inputs:
+      month:
+        description: 'Month to rebuild (e.g. 2026-02), leave blank for all'
+        required: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build PPTX and HTML
+        run: node build.js
+        env:
+          BUILD_MONTH: ${{ github.event.inputs.month }}
+
+      - name: Commit outputs
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.html reports/
+          git diff --staged --quiet || git commit -m "Auto-build: $(date +'%Y-%m-%d %H:%M') UTC"
+          git push
