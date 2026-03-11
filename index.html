@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>OYA Microcredit — Monthly Performance Reports</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --brown:       #5D300F;
+      --brown-mid:   #7A4520;
+      --brown-lt:    #C4956A;
+      --cream:       #FFF9D9;
+      --cream-dk:    #F0E0B8;
+      --bg:          #FAF7F2;
+      --surface:     #FFFFFF;
+      --border:      #E4D9C8;
+      --text:        #2D2A26;
+      --text-muted:  #7A7060;
+      --pos:         #1A7A6E;
+      --neg:         #C0392B;
+      --teal:        #1A7A6E;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* ── HEADER ── */
+    .site-header {
+      background: var(--brown);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(93,48,15,0.25);
+    }
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      color: var(--cream);
+      letter-spacing: 0.05em;
+    }
+    .logo span { color: var(--brown-lt); font-weight: 400; font-size: 0.9rem; margin-left: 0.6rem; font-family: 'DM Sans', sans-serif; }
+    .header-tag {
+      font-size: 0.72rem;
+      color: var(--cream-dk);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    /* ── NAV ── */
+    .month-nav {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      display: flex;
+      gap: 0.25rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .month-nav::-webkit-scrollbar { display: none; }
+    .nav-month {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 500;
+      padding: 0.7rem 0.9rem;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .nav-month:hover { color: var(--brown); border-bottom-color: var(--brown-lt); }
+
+    /* ── MAIN ── */
+    .container { max-width: 1200px; margin: 0 auto; padding: 2.5rem 2rem 4rem; }
+
+    /* ── MONTH SECTION ── */
+    .month-section {
+      margin-bottom: 4rem;
+      animation: fadeUp 0.4s ease both;
+    }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+    .month-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid var(--brown);
+    }
+    .month-title-wrap { display: flex; align-items: center; gap: 0.75rem; }
+    .month-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--brown);
+      flex-shrink: 0;
+    }
+    .month-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      color: var(--brown);
+      font-weight: 700;
+    }
+
+    .dl-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--brown);
+      color: var(--cream);
+      text-decoration: none;
+      padding: 0.5rem 1.1rem;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .dl-btn:hover { background: var(--brown-mid); transform: translateY(-1px); }
+
+    /* ── KPI STRIP ── */
+    .kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.75rem;
+      margin-bottom: 1.75rem;
+    }
+    @media (max-width: 900px) { .kpi-strip { grid-template-columns: repeat(3, 1fr); } }
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--brown);
+      padding: 1rem;
+      border-radius: 3px;
+    }
+    .kpi-val {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--brown);
+      line-height: 1.2;
+    }
+    .kpi-val.neg { color: var(--neg); }
+    .kpi-lbl { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.3rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
+
+    /* ── TABLES ── */
+    .table-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      margin-bottom: 1.25rem;
+      overflow: hidden;
+    }
+    .tbl-title {
+      background: var(--cream);
+      border-bottom: 1px solid var(--border);
+      border-left: 4px solid var(--brown);
+      padding: 0.6rem 1rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--brown);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead tr { background: var(--brown); }
+    thead th {
+      padding: 0.6rem 0.9rem;
+      text-align: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--cream);
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+    thead th:first-child { text-align: left; }
+    tbody tr:nth-child(even) { background: var(--cream); }
+    tbody tr:hover { background: var(--cream-dk); transition: background 0.15s; }
+    tbody td {
+      padding: 0.55rem 0.9rem;
+      text-align: center;
+      font-size: 0.82rem;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+    }
+    tbody td:first-child, td.country { text-align: left; font-weight: 600; color: var(--brown); font-family: 'DM Sans', sans-serif; }
+    .total-row td { background: var(--cream-dk) !important; font-weight: 700; color: var(--brown); }
+    .pos { color: var(--pos); font-weight: 600; }
+    .neg { color: var(--neg); font-weight: 600; }
+
+    /* ── FOOTER ── */
+    .site-footer {
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="logo">OYA <span>Microcredit</span></div>
+    <div class="header-tag">Monthly Performance Reports</div>
+  </header>
+
+  <nav class="month-nav"><a href="#2026-01" class="nav-month">January 2026</a></nav>
+
+  <main class="container">
+    
+    <section class="month-section" id="2026-01">
+      <div class="month-header">
+        <div class="month-title-wrap">
+          <span class="month-dot"></span>
+          <h2 class="month-title">January 2026</h2>
+        </div>
+        <a class="dl-btn" href="reports/2026-01.pptx" download>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download PPTX
+        </a>
+      </div>
+
+      <div class="kpi-strip">
+        <div class="kpi-card"><div class="kpi-val">$3,937,968</div><div class="kpi-lbl">Total Disbursed</div></div>
+        <div class="kpi-card"><div class="kpi-val">$15,321,293</div><div class="kpi-lbl">Total Loan Book</div></div>
+        <div class="kpi-card"><div class="kpi-val">$1,885,356</div><div class="kpi-lbl">Group Revenue</div></div>
+        <div class="kpi-card"><div class="kpi-val ">$521,608</div><div class="kpi-lbl">Group Operating Income</div></div>
+        <div class="kpi-card"><div class="kpi-val">27.7%</div><div class="kpi-lbl">Group Margin</div></div>
+      </div>
+
+      <div class="table-block">
+        <div class="tbl-title">Loan Applications & Assessment Efficiency</div>
+        <table>
+          <thead><tr><th>Country</th><th>Apps / Team</th><th>Teams</th><th>Total Apps</th><th>vs Prior Month</th><th>Approval Rate</th><th>Change (bps)</th></tr></thead>
+          <tbody>
+      <tr>
+        <td class="country">Tanzania</td>
+        <td>103</td>
+        <td>139</td>
+        <td>14,358</td>
+        <td class="">—</td>
+        <td>0.0%</td>
+        <td class="pos">+0 bps</td>
+      </tr>
+      <tr>
+        <td class="country">Kenya</td>
+        <td>1</td>
+        <td>9,890</td>
+        <td>9,899</td>
+        <td class="">—</td>
+        <td>0.0%</td>
+        <td class="pos">+0 bps</td>
+      </tr>
+      <tr>
+        <td class="country">Uganda</td>
+        <td>1</td>
+        <td>1,557</td>
+        <td>1,559</td>
+        <td class="">—</td>
+        <td>0.0%</td>
+        <td class="pos">+0 bps</td>
+      </tr>
+      <tr>
+        <td class="country">Sierra Leone</td>
+        <td>1</td>
+        <td>1,568</td>
+        <td>1,569</td>
+        <td class="">—</td>
+        <td>0.0%</td>
+        <td class="pos">+0 bps</td>
+      </tr>
+      <tr>
+        <td class="country">Nigeria</td>
+        <td>1</td>
+        <td>733</td>
+        <td>733</td>
+        <td class="">—</td>
+        <td>0.0%</td>
+        <td class="pos">+0 bps</td>
+      </tr></tbody>
+        </table>
+      </div>
+
+      <div class="table-block">
+        <div class="tbl-title">Disbursements & Loan Book</div>
+        <table>
+          <thead><tr><th>Country</th><th>Total Disbursed</th><th>vs Prior</th><th>Avg Loan Size</th><th>Disb / Team</th><th>Loan Book</th><th>vs Prior</th></tr></thead>
+          <tbody>
+      <tr>
+        <td class="country">Tanzania</td>
+        <td>$2,069,729</td>
+        <td class="">—</td>
+        <td>$210</td>
+        <td>219</td>
+        <td>$7,095,912</td>
+        <td class="">—</td>
+      </tr>
+      <tr>
+        <td class="country">Kenya</td>
+        <td>$1,080,879</td>
+        <td class="">—</td>
+        <td>$218</td>
+        <td>134</td>
+        <td>$4,786,073</td>
+        <td class="">—</td>
+      </tr>
+      <tr>
+        <td class="country">Uganda</td>
+        <td>$210,518</td>
+        <td class="">—</td>
+        <td>$233</td>
+        <td>41</td>
+        <td>$1,421,675</td>
+        <td class="">—</td>
+      </tr>
+      <tr>
+        <td class="country">Sierra Leone</td>
+        <td>$493,834</td>
+        <td class="">—</td>
+        <td>$423</td>
+        <td>39</td>
+        <td>$1,440,365</td>
+        <td class="">—</td>
+      </tr>
+      <tr>
+        <td class="country">Nigeria</td>
+        <td>$83,007</td>
+        <td class="">—</td>
+        <td>$227</td>
+        <td>23</td>
+        <td>$577,268</td>
+        <td class="">—</td>
+      </tr></tbody>
+        </table>
+      </div>
+
+      <div class="table-block">
+        <div class="tbl-title">Default Rates</div>
+        <table>
+          <thead><tr><th>Country</th><th>Chronic Rate</th><th>Change (bps)</th><th>PAR 30</th><th>Change (bps)</th></tr></thead>
+          <tbody>
+      <tr>
+        <td class="country">Tanzania</td>
+        <td>5.7%</td>
+        <td class="pos">+571 bps</td>
+        <td>11.1%</td>
+        <td class="pos">+1109 bps</td>
+      </tr>
+      <tr>
+        <td class="country">Kenya</td>
+        <td>17.1%</td>
+        <td class="pos">+1714 bps</td>
+        <td>8.4%</td>
+        <td class="pos">+842 bps</td>
+      </tr>
+      <tr>
+        <td class="country">Uganda</td>
+        <td>14.0%</td>
+        <td class="pos">+1401 bps</td>
+        <td>23.6%</td>
+        <td class="pos">+2361 bps</td>
+      </tr>
+      <tr>
+        <td class="country">Sierra Leone</td>
+        <td>3.3%</td>
+        <td class="pos">+330 bps</td>
+        <td>2.6%</td>
+        <td class="pos">+261 bps</td>
+      </tr>
+      <tr>
+        <td class="country">Nigeria</td>
+        <td>19.3%</td>
+        <td class="pos">+1934 bps</td>
+        <td>22.1%</td>
+        <td class="pos">+2211 bps</td>
+      </tr></tbody>
+        </table>
+      </div>
+
+      <div class="table-block">
+        <div class="tbl-title">Financial Summary (USD)</div>
+        <table>
+          <thead><tr><th>Country</th><th>Revenue</th><th>Provision</th><th>Opex</th><th>Operating Income</th><th>Margin</th><th>Prior Month OI</th></tr></thead>
+          <tbody>
+            
+      <tr>
+        <td class="country">Tanzania</td>
+        <td>$871,059</td>
+        <td>$-147,088</td>
+        <td>$-495,207</td>
+        <td class="">$228,764</td>
+        <td>26.3%</td>
+        <td>$-334,214</td>
+      </tr>
+      <tr>
+        <td class="country">Kenya</td>
+        <td>$615,703</td>
+        <td>$-70,862</td>
+        <td>$-175,503</td>
+        <td class="">$369,337</td>
+        <td>60.0%</td>
+        <td>$0</td>
+      </tr>
+      <tr>
+        <td class="country">Uganda</td>
+        <td>$148,399</td>
+        <td>$-70,540</td>
+        <td>$-140,209</td>
+        <td class="neg">$-62,350</td>
+        <td>-42.0%</td>
+        <td>$-113,329</td>
+      </tr>
+      <tr>
+        <td class="country">Sierra Leone</td>
+        <td>$183,186</td>
+        <td>$-7,306</td>
+        <td>$-120,605</td>
+        <td class="">$55,275</td>
+        <td>30.2%</td>
+        <td>$-59,801</td>
+      </tr>
+      <tr>
+        <td class="country">Nigeria</td>
+        <td>$67,009</td>
+        <td>$-34,270</td>
+        <td>$-102,159</td>
+        <td class="neg">$-69,419</td>
+        <td>-103.6%</td>
+        <td>$0</td>
+      </tr>
+            <tr class="total-row">
+              <td>Group Total</td>
+              <td>$1,885,356</td>
+              <td>$-330,066</td>
+              <td>$-1,033,683</td>
+              <td class="">$521,608</td>
+              <td>27.7%</td>
+              <td>$-507,344</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    OYA Microcredit · Confidential · Auto-generated March 11, 2026
+  </footer>
+</body>
+</html>
