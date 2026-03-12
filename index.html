@@ -20,211 +20,246 @@
       --text-muted:  #7A7060;
       --pos:         #1A7A6E;
       --neg:         #C0392B;
-      --teal:        #1A7A6E;
+      --sidebar-w:   220px;
+      --header-h:    56px;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       font-family: 'DM Sans', sans-serif;
       background: var(--bg);
       color: var(--text);
       font-size: 14px;
       line-height: 1.6;
+      overflow-x: hidden;
     }
 
-    /* ── HEADER ── */
+    /* ── TOP HEADER ── */
     .site-header {
       background: var(--brown);
-      padding: 0 2rem;
+      height: var(--header-h);
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      height: 64px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 2px 12px rgba(93,48,15,0.25);
+      padding: 0 1.25rem;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 200;
+      box-shadow: 0 2px 12px rgba(93,48,15,0.3);
+      gap: 0.75rem;
     }
+    .hamburger {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 6px;
+      color: var(--cream);
+      flex-shrink: 0;
+    }
+    .hamburger svg { display: block; }
     .logo {
       font-family: 'Playfair Display', serif;
-      font-size: 1.5rem;
+      font-size: 1.35rem;
       color: var(--cream);
-      letter-spacing: 0.05em;
+      letter-spacing: 0.04em;
+      flex: 1;
     }
-    .logo span { color: var(--brown-lt); font-weight: 400; font-size: 0.9rem; margin-left: 0.6rem; font-family: 'DM Sans', sans-serif; }
+    .logo span { color: var(--brown-lt); font-weight: 400; font-size: 0.82rem; margin-left: 0.5rem; font-family: 'DM Sans', sans-serif; }
     .header-tag {
-      font-size: 0.72rem;
+      font-size: 0.68rem;
       color: var(--cream-dk);
-      letter-spacing: 0.12em;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
+      display: none;
     }
 
-    /* ── NAV ── */
-    .month-nav {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      padding: 0 2rem;
+    /* ── LAYOUT ── */
+    .app-body {
       display: flex;
-      gap: 0.25rem;
-      overflow-x: auto;
-      scrollbar-width: none;
+      padding-top: var(--header-h);
+      min-height: 100vh;
     }
-    .month-nav::-webkit-scrollbar { display: none; }
-    .nav-month {
-      text-decoration: none;
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      position: fixed;
+      top: var(--header-h);
+      left: 0;
+      bottom: 0;
+      overflow-y: auto;
+      z-index: 150;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.25s ease;
+    }
+    .sidebar-label {
+      padding: 1rem 1.1rem 0.5rem;
+      font-size: 0.65rem;
+      font-weight: 700;
       color: var(--text-muted);
-      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    .nav-month {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.65rem 1.1rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
       font-weight: 500;
-      padding: 0.7rem 0.9rem;
-      border-bottom: 2px solid transparent;
+      color: var(--text-muted);
+      border-left: 3px solid transparent;
+      transition: all 0.15s;
       white-space: nowrap;
-      transition: color 0.2s, border-color 0.2s;
     }
-    .nav-month:hover { color: var(--brown); border-bottom-color: var(--brown-lt); }
-
-    /* ── MAIN ── */
-    .container { max-width: 1200px; margin: 0 auto; padding: 2.5rem 2rem 4rem; }
-
-    /* ── MONTH SECTION ── */
-    .month-section {
-      margin-bottom: 4rem;
-      animation: fadeUp 0.4s ease both;
+    .nav-month:hover { color: var(--brown); background: var(--cream); border-left-color: var(--brown-lt); }
+    .nav-month.active { color: var(--brown); background: var(--cream); border-left-color: var(--brown); font-weight: 700; }
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 1rem 1.1rem;
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      line-height: 1.5;
     }
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ── OVERLAY (mobile) ── */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 140;
+    }
+    .sidebar-overlay.open { display: block; }
+
+    /* ── MAIN CONTENT ── */
+    .main-content {
+      flex: 1;
+      margin-left: var(--sidebar-w);
+      min-width: 0;
+      padding: 2rem 2rem 4rem;
+      max-width: calc(1200px + var(--sidebar-w));
+    }
+
+    /* ── MONTH PAGE ── */
+    .month-page { display: none; animation: fadeUp 0.3s ease both; }
+    .month-page.active { display: block; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 
     .month-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
       margin-bottom: 1.5rem;
       padding-bottom: 1rem;
       border-bottom: 2px solid var(--brown);
     }
     .month-title-wrap { display: flex; align-items: center; gap: 0.75rem; }
-    .month-dot {
-      width: 10px; height: 10px;
-      border-radius: 50%;
-      background: var(--brown);
-      flex-shrink: 0;
-    }
-    .month-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.6rem;
-      color: var(--brown);
-      font-weight: 700;
-    }
+    .month-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--brown); flex-shrink: 0; }
+    .month-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--brown); font-weight: 700; }
 
+    .dl-btns { display: flex; gap: 0.5rem; flex-wrap: wrap; }
     .dl-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      background: var(--brown);
-      color: var(--cream);
-      text-decoration: none;
-      padding: 0.5rem 1.1rem;
-      border-radius: 4px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-      transition: background 0.2s, transform 0.15s;
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      background: var(--brown); color: var(--cream);
+      text-decoration: none; padding: 0.45rem 1rem;
+      border-radius: 4px; font-size: 0.8rem; font-weight: 600;
+      letter-spacing: 0.02em; transition: background 0.2s, transform 0.15s;
+      white-space: nowrap;
     }
     .dl-btn:hover { background: var(--brown-mid); transform: translateY(-1px); }
     .dl-btn.pdf { background: var(--brown-mid); }
     .dl-btn.pdf:hover { background: var(--brown); }
-    .dl-btns { display: flex; gap: 0.5rem; }
 
     /* ── KPI STRIP ── */
     .kpi-strip {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      gap: 0.75rem;
-      margin-bottom: 1.75rem;
+      gap: 0.7rem;
+      margin-bottom: 1.5rem;
     }
-    @media (max-width: 900px) { .kpi-strip { grid-template-columns: repeat(3, 1fr); } }
     .kpi-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-top: 3px solid var(--brown);
-      padding: 1rem;
-      border-radius: 3px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-top: 3px solid var(--brown); padding: 0.9rem; border-radius: 3px;
     }
-    .kpi-val {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: var(--brown);
-      line-height: 1.2;
-    }
+    .kpi-val { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; color: var(--brown); line-height: 1.2; }
     .kpi-val.neg { color: var(--neg); }
-    .kpi-lbl { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.3rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
+    .kpi-lbl { font-size: 0.68rem; color: var(--text-muted); margin-top: 0.25rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
 
     /* ── TABLES ── */
-    .table-block {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 3px;
-      margin-bottom: 1.25rem;
-      overflow: hidden;
-    }
-    .tbl-title {
-      background: var(--cream);
-      border-bottom: 1px solid var(--border);
-      border-left: 4px solid var(--brown);
-      padding: 0.6rem 1rem;
-      font-size: 0.78rem;
-      font-weight: 700;
-      color: var(--brown);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-    }
-    table { width: 100%; border-collapse: collapse; }
+    .table-block { background: var(--surface); border: 1px solid var(--border); border-radius: 3px; margin-bottom: 1.1rem; overflow: hidden; }
+    .tbl-title { background: var(--cream); border-bottom: 1px solid var(--border); border-left: 4px solid var(--brown); padding: 0.55rem 1rem; font-size: 0.75rem; font-weight: 700; color: var(--brown); text-transform: uppercase; letter-spacing: 0.06em; }
+    .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table { width: 100%; border-collapse: collapse; min-width: 480px; }
     thead tr { background: var(--brown); }
-    thead th {
-      padding: 0.6rem 0.9rem;
-      text-align: center;
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--cream);
-      letter-spacing: 0.04em;
-      white-space: nowrap;
-    }
+    thead th { padding: 0.55rem 0.8rem; text-align: center; font-size: 0.72rem; font-weight: 600; color: var(--cream); letter-spacing: 0.04em; white-space: nowrap; }
     thead th:first-child { text-align: left; }
     tbody tr:nth-child(even) { background: var(--cream); }
     tbody tr:hover { background: var(--cream-dk); transition: background 0.15s; }
-    tbody td {
-      padding: 0.55rem 0.9rem;
-      text-align: center;
-      font-size: 0.82rem;
-      color: var(--text);
-      border-bottom: 1px solid var(--border);
-    }
+    tbody td { padding: 0.5rem 0.8rem; text-align: center; font-size: 0.8rem; color: var(--text); border-bottom: 1px solid var(--border); }
     tbody td:first-child, td.country { text-align: left; font-weight: 600; color: var(--brown); font-family: 'DM Sans', sans-serif; }
     .total-row td { background: var(--cream-dk) !important; font-weight: 700; color: var(--brown); }
     .pos { color: var(--pos); font-weight: 600; }
     .neg { color: var(--neg); font-weight: 600; }
 
-    /* ── FOOTER ── */
-    .site-footer {
-      text-align: center;
-      padding: 2rem;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      border-top: 1px solid var(--border);
+    /* ── EMPTY STATE ── */
+    .empty-state { text-align: center; padding: 4rem 2rem; color: var(--text-muted); }
+    .empty-state h3 { font-family: 'Playfair Display', serif; color: var(--brown); margin-bottom: 0.5rem; font-size: 1.2rem; }
+
+    /* ── MOBILE ── */
+    @media (max-width: 768px) {
+      :root { --sidebar-w: 0px; }
+      .hamburger { display: flex; }
+      .header-tag { display: none; }
+      .sidebar { transform: translateX(-220px); width: 220px; }
+      .sidebar.open { transform: translateX(0); }
+      .main-content { margin-left: 0; padding: 1.25rem 1rem 3rem; }
+      .kpi-strip { grid-template-columns: repeat(2, 1fr); }
+      .kpi-strip .kpi-card:last-child:nth-child(odd) { grid-column: span 2; }
+      .month-header { flex-direction: column; align-items: flex-start; }
+      .month-title { font-size: 1.25rem; }
+    }
+    @media (min-width: 769px) {
+      .header-tag { display: block; }
+      .sidebar { transform: none !important; }
+    }
+    @media (min-width: 900px) {
+      .kpi-strip { grid-template-columns: repeat(5, 1fr); }
     }
   </style>
 </head>
 <body>
   <header class="site-header">
+    <button class="hamburger" onclick="toggleSidebar()" aria-label="Toggle menu">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
     <div class="logo">OYA <span>Microcredit</span></div>
     <div class="header-tag">Monthly Performance Reports</div>
   </header>
 
-  <nav class="month-nav"><a href="#2026-02" class="nav-month">February 2026</a><a href="#2026-01" class="nav-month">January 2026</a></nav>
+  <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
 
-  <main class="container">
-    
-    <section class="month-section" id="2026-02">
+  <div class="app-body">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-label">Reports</div>
+      <button class="nav-month" data-month="2026-02" onclick="showMonth('2026-02')">February 2026</button><button class="nav-month" data-month="2026-01" onclick="showMonth('2026-01')">January 2026</button>
+      <div class="sidebar-footer">OYA Microcredit<br/>Confidential</div>
+    </aside>
+
+    <main class="main-content">
+      
+    <div class="month-page" id="page-2026-02">
       <div class="month-header">
         <div class="month-title-wrap">
           <span class="month-dot"></span>
@@ -252,7 +287,7 @@
 
       <div class="table-block">
         <div class="tbl-title">Loan Applications & Assessment Efficiency</div>
-        <table>
+        <div class="tbl-wrap"><table>
           <thead><tr><th>Country</th><th>Apps / Team</th><th>Teams</th><th>Total Apps</th><th>vs Prior Month</th><th>Approval Rate</th><th>Change (bps)</th></tr></thead>
           <tbody>
       <tr>
@@ -299,13 +334,21 @@
         <td class="">—</td>
         <td>63.3%</td>
         <td class="neg">+6331 bps</td>
-      </tr></tbody>
-        </table>
+      </tr><tr class="total-row">
+      <td>Group Total</td>
+      <td>81</td>
+      <td>349</td>
+      <td>28,147</td>
+      <td class="">—</td>
+      <td>47.1%</td>
+      <td class="neg">+4712 bps</td>
+    </tr></tbody>
+        </table></div>
       </div>
 
       <div class="table-block">
         <div class="tbl-title">Disbursements & Loan Book</div>
-        <table>
+        <div class="tbl-wrap"><table>
           <thead><tr><th>Country</th><th>Total Disbursed</th><th>vs Prior</th><th>Avg Loan Size</th><th>Disb / Team</th><th>Loan Book</th><th>vs Prior</th></tr></thead>
           <tbody>
       <tr>
@@ -352,13 +395,21 @@
         <td>41</td>
         <td>$504,261</td>
         <td class="">—</td>
-      </tr></tbody>
-        </table>
+      </tr><tr class="total-row">
+      <td>Group Total</td>
+      <td>$4,152,197</td>
+      <td class="">—</td>
+      <td>—</td>
+      <td>$11,897</td>
+      <td>$13,661,650</td>
+      <td class="">—</td>
+    </tr></tbody>
+        </table></div>
       </div>
 
       <div class="table-block">
         <div class="tbl-title">Default Rates</div>
-        <table>
+        <div class="tbl-wrap"><table>
           <thead><tr><th>Country</th><th>Chronic Rate</th><th>Change (bps)</th><th>PAR 30</th><th>Change (bps)</th></tr></thead>
           <tbody>
       <tr>
@@ -395,13 +446,19 @@
         <td class="pos">+1756 bps</td>
         <td>21.7%</td>
         <td class="pos">+2170 bps</td>
-      </tr></tbody>
-        </table>
+      </tr><tr class="total-row">
+      <td>Group Total</td>
+      <td>6.4%</td>
+      <td class="pos">+638 bps</td>
+      <td>9.2%</td>
+      <td class="pos">+918 bps</td>
+    </tr></tbody>
+        </table></div>
       </div>
 
       <div class="table-block">
         <div class="tbl-title">Financial Summary (USD)</div>
-        <table>
+        <div class="tbl-wrap"><table>
           <thead><tr><th>Country</th><th>Revenue</th><th>Provision</th><th>Opex</th><th>Operating Income</th><th>Margin</th><th>Prior Month OI</th></tr></thead>
           <tbody>
             
@@ -456,15 +513,15 @@
               <td>$-306,968</td>
               <td>$-1,252,152</td>
               <td class="">$286,540</td>
-              <td>15.5%</td>
-              <td>$314,841</td>
+              <td class="">15.5%</td>
+              <td class="">$314,841</td>
             </tr>
           </tbody>
-        </table>
+        </table></div>
       </div>
-    </section>
+    </div>
 
-    <section class="month-section" id="2026-01">
+    <div class="month-page" id="page-2026-01">
       <div class="month-header">
         <div class="month-title-wrap">
           <span class="month-dot"></span>
@@ -492,7 +549,7 @@
 
       <div class="table-block">
         <div class="tbl-title">Loan Applications & Assessment Efficiency</div>
-        <table>
+        <div class="tbl-wrap"><table>
           <thead><tr><th>Country</th><th>Apps / Team</th><th>Teams</th><th>Total Apps</th><th>vs Prior Month</th><th>Approval Rate</th><th>Change (bps)</th></tr></thead>
           <tbody>
       <tr>
@@ -539,13 +596,21 @@
         <td class="">—</td>
         <td>61.9%</td>
         <td class="neg">+6186 bps</td>
-      </tr></tbody>
-        </table>
+      </tr><tr class="total-row">
+      <td>Group Total</td>
+      <td>87</td>
+      <td>347</td>
+      <td>30,291</td>
+      <td class="">—</td>
+      <td>91.1%</td>
+      <td class="neg">+9112 bps</td>
+    </tr></tbody>
+        </table></div>
       </div>
 
       <div class="table-block">
         <div class="tbl-title">Disbursements & Loan Book</div>
-        <table>
+        <div class="tbl-wrap"><table>
           <thead><tr><th>Country</th><th>Total Disbursed</th><th>vs Prior</th><th>Avg Loan Size</th><th>Disb / Team</th><th>Loan Book</th><th>vs Prior</th></tr></thead>
           <tbody>
       <tr>
@@ -592,13 +657,21 @@
         <td>23</td>
         <td>$469,005</td>
         <td class="">—</td>
-      </tr></tbody>
-        </table>
+      </tr><tr class="total-row">
+      <td>Group Total</td>
+      <td>$3,937,968</td>
+      <td class="">—</td>
+      <td>—</td>
+      <td>$11,349</td>
+      <td>$12,156,790</td>
+      <td class="">—</td>
+    </tr></tbody>
+        </table></div>
       </div>
 
       <div class="table-block">
         <div class="tbl-title">Default Rates</div>
-        <table>
+        <div class="tbl-wrap"><table>
           <thead><tr><th>Country</th><th>Chronic Rate</th><th>Change (bps)</th><th>PAR 30</th><th>Change (bps)</th></tr></thead>
           <tbody>
       <tr>
@@ -635,13 +708,19 @@
         <td class="pos">+1572 bps</td>
         <td>17.0%</td>
         <td class="pos">+1700 bps</td>
-      </tr></tbody>
-        </table>
+      </tr><tr class="total-row">
+      <td>Group Total</td>
+      <td>5.6%</td>
+      <td class="pos">+557 bps</td>
+      <td>8.1%</td>
+      <td class="pos">+814 bps</td>
+    </tr></tbody>
+        </table></div>
       </div>
 
       <div class="table-block">
         <div class="tbl-title">Financial Summary (USD)</div>
-        <table>
+        <div class="tbl-wrap"><table>
           <thead><tr><th>Country</th><th>Revenue</th><th>Provision</th><th>Opex</th><th>Operating Income</th><th>Margin</th><th>Prior Month OI</th></tr></thead>
           <tbody>
             
@@ -696,17 +775,47 @@
               <td>$-330,066</td>
               <td>$-1,240,449</td>
               <td class="">$314,841</td>
-              <td>16.7%</td>
-              <td>$-507,344</td>
+              <td class="">16.7%</td>
+              <td class="neg">$-507,344</td>
             </tr>
           </tbody>
-        </table>
+        </table></div>
       </div>
-    </section>
-  </main>
+    </div>
+      <div class="month-page active" id="page-empty" style="display:none"></div>
+    </main>
+  </div>
 
-  <footer class="site-footer">
-    OYA Microcredit · Confidential · Auto-generated March 12, 2026
-  </footer>
+  <script>
+    const LATEST = "2026-02";
+
+    function showMonth(monthStr) {
+      document.querySelectorAll('.month-page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-month').forEach(b => b.classList.remove('active'));
+      const page = document.getElementById('page-' + monthStr);
+      if (page) { page.classList.add('active'); }
+      const btn = document.querySelector('[data-month="' + monthStr + '"]');
+      if (btn) { btn.classList.add('active'); }
+      window.history.replaceState(null, '', '#' + monthStr);
+      // Close sidebar on mobile
+      if (window.innerWidth <= 768) { closeSidebar(); }
+    }
+
+    function toggleSidebar() {
+      const sb = document.getElementById('sidebar');
+      const ov = document.getElementById('overlay');
+      sb.classList.toggle('open');
+      ov.classList.toggle('open');
+    }
+    function closeSidebar() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('overlay').classList.remove('open');
+    }
+
+    // Show correct month on load
+    const hash = window.location.hash.replace('#', '');
+    const startMonth = (hash && document.getElementById('page-' + hash)) ? hash : LATEST;
+    if (startMonth) showMonth(startMonth);
+  </script>
 </body>
 </html>
