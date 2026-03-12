@@ -92,8 +92,13 @@ jobs:
         if: github.event.inputs.action != 'setup-baseline'
         run: |
           sudo apt-get install -y libreoffice --no-install-recommends -qq
-          libreoffice --headless --convert-to pdf reports/*.pptx --outdir reports/
-
+          if [ -n "${{ github.event.inputs.month }}" ]; then
+            PPTX="reports/${{ github.event.inputs.month }}.pptx"
+          else
+            PPTX=$(ls -t reports/*.pptx | head -1)
+          fi
+          echo "Converting: $PPTX"
+          libreoffice --headless --convert-to pdf "$PPTX" --outdir reports/
       # ── COMMIT ────────────────────────────────────────────────────────────
       - name: Commit outputs
         run: |
