@@ -1,6 +1,8 @@
 name: Build OYA Monthly Report
 
 on:
+  schedule:
+    - cron: '0 23 5 * *'   # 11pm UTC on the 5th of every month
   push:
     paths:
       - 'data/**.json'
@@ -8,7 +10,7 @@ on:
   workflow_dispatch:
     inputs:
       month:
-        description: 'Month to rebuild (e.g. 2026-02), leave blank for all'
+        description: 'Month to process (e.g. 2026-02), leave blank for current month'
         required: false
 
 jobs:
@@ -23,12 +25,44 @@ jobs:
         with:
           fetch-depth: 0
 
+      # ── PYTHON: Run process.py ─────────────────────────────────────────────
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Write Google credentials
+        run: echo '${{ secrets.GOOGLE_CREDENTIALS }}' > credentials.json
+
+      - name: Run process.py
+        run: |
+          # Use input month if provided, otherwise derive previous month
+          if [ -n "${{ github.event.inputs.month }}" ]; then
+            MONTH="${{ github.event.inputs.month }}"
+          else
+            MONTH=$(python3 -c "
+          from datetime import date, timedelta
+          today = date.today()
+          first = today.replace(day=1)
+          prev = first - timedelta(days=1)
+          print(prev.strftime('%Y-%m'))
+          ")
+          fi
+          echo "Processing month: $MONTH"
+          python process.py $MONTH
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # ── NODE: Build PPTX + HTML ────────────────────────────────────────────
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: Install dependencies
+      - name: Install Node dependencies
         run: npm install
 
       - name: Build PPTX and HTML
@@ -36,15 +70,17 @@ jobs:
         env:
           BUILD_MONTH: ${{ github.event.inputs.month }}
 
+      # ── PDF: Convert PPTX → PDF ───────────────────────────────────────────
       - name: Convert PPTX to PDF
         run: |
           sudo apt-get install -y libreoffice --no-install-recommends -qq
           libreoffice --headless --convert-to pdf reports/*.pptx --outdir reports/
 
+      # ── COMMIT ────────────────────────────────────────────────────────────
       - name: Commit outputs
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add index.html reports/
+          git add index.html reports/ data/
           git diff --staged --quiet || git commit -m "Auto-build: $(date +'%Y-%m-%d %H:%M') UTC"
           git push
