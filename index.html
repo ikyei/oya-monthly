@@ -130,6 +130,9 @@
       transition: background 0.2s, transform 0.15s;
     }
     .dl-btn:hover { background: var(--brown-mid); transform: translateY(-1px); }
+    .dl-btn.pdf { background: var(--brown-mid); }
+    .dl-btn.pdf:hover { background: var(--brown); }
+    .dl-btns { display: flex; gap: 0.5rem; }
 
     /* ── KPI STRIP ── */
     .kpi-strip {
@@ -227,10 +230,16 @@
           <span class="month-dot"></span>
           <h2 class="month-title">January 2026</h2>
         </div>
-        <a class="dl-btn" href="reports/2026-01.pptx" download>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Download PPTX
-        </a>
+        <div class="dl-btns">
+          <a class="dl-btn" href="reports/2026-01.pptx" download>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download PPTX
+          </a>
+          <a class="dl-btn pdf" href="reports/2026-01.pdf" download>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download PDF
+          </a>
+        </div>
       </div>
 
       <div class="kpi-strip">
