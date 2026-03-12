@@ -83,4 +83,5 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add index.html reports/ data/
           git diff --staged --quiet || git commit -m "Auto-build: $(date +'%Y-%m-%d %H:%M') UTC"
+          git pull --rebase
           git push
