@@ -6,7 +6,6 @@ on:
   push:
     paths:
       - 'data/**.json'
-      - 'build.js'
   workflow_dispatch:
     inputs:
       action:
@@ -33,7 +32,23 @@ jobs:
         with:
           fetch-depth: 0
 
-      # ── PYTHON: Run process.py ─────────────────────────────────────────────
+      # ── CACHE: pip ────────────────────────────────────────────────────────
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: pip-
+
+      # ── CACHE: LibreOffice ────────────────────────────────────────────────
+      - name: Cache LibreOffice
+        id: cache-libreoffice
+        uses: actions/cache@v4
+        with:
+          path: /usr/lib/libreoffice
+          key: libreoffice-ubuntu-latest
+
+      # ── PYTHON ────────────────────────────────────────────────────────────
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -70,7 +85,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # ── NODE: Build PPTX + HTML (skip for setup-baseline) ─────────────────
+      # ── NODE ──────────────────────────────────────────────────────────────
       - name: Setup Node.js
         if: github.event.inputs.action != 'setup-baseline'
         uses: actions/setup-node@v4
@@ -87,11 +102,14 @@ jobs:
         env:
           BUILD_MONTH: ${{ github.event.inputs.month }}
 
-      # ── PDF: Convert PPTX → PDF ───────────────────────────────────────────
+      # ── PDF ───────────────────────────────────────────────────────────────
+      - name: Install LibreOffice (if not cached)
+        if: github.event.inputs.action != 'setup-baseline' && steps.cache-libreoffice.outputs.cache-hit != 'true'
+        run: sudo apt-get install -y libreoffice --no-install-recommends -qq
+
       - name: Convert PPTX to PDF
         if: github.event.inputs.action != 'setup-baseline'
         run: |
-          sudo apt-get install -y libreoffice --no-install-recommends -qq
           if [ -n "${{ github.event.inputs.month }}" ]; then
             PPTX="reports/${{ github.event.inputs.month }}.pptx"
           else
@@ -99,6 +117,7 @@ jobs:
           fi
           echo "Converting: $PPTX"
           libreoffice --headless --convert-to pdf "$PPTX" --outdir reports/
+
       # ── COMMIT ────────────────────────────────────────────────────────────
       - name: Commit outputs
         run: |
