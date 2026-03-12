@@ -9,8 +9,16 @@ on:
       - 'build.js'
   workflow_dispatch:
     inputs:
+      action:
+        description: 'Action to run'
+        required: true
+        default: 'process-month'
+        type: choice
+        options:
+          - process-month
+          - setup-baseline
       month:
-        description: 'Month to process (e.g. 2026-02), leave blank for current month'
+        description: 'Month to process (e.g. 2026-02). Only used for process-month, leave blank for prior month.'
         required: false
 
 jobs:
@@ -39,39 +47,49 @@ jobs:
 
       - name: Run process.py
         run: |
-          # Use input month if provided, otherwise derive previous month
-          if [ -n "${{ github.event.inputs.month }}" ]; then
-            MONTH="${{ github.event.inputs.month }}"
+          ACTION="${{ github.event.inputs.action }}"
+
+          if [ "$ACTION" = "setup-baseline" ]; then
+            echo "Running setup-baseline..."
+            python process.py setup-baseline
           else
-            MONTH=$(python3 -c "
+            if [ -n "${{ github.event.inputs.month }}" ]; then
+              MONTH="${{ github.event.inputs.month }}"
+            else
+              MONTH=$(python3 -c "
           from datetime import date, timedelta
           today = date.today()
           first = today.replace(day=1)
           prev = first - timedelta(days=1)
           print(prev.strftime('%Y-%m'))
           ")
+            fi
+            echo "Processing month: $MONTH"
+            python process.py $MONTH
           fi
-          echo "Processing month: $MONTH"
-          python process.py $MONTH
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # ── NODE: Build PPTX + HTML ────────────────────────────────────────────
+      # ── NODE: Build PPTX + HTML (skip for setup-baseline) ─────────────────
       - name: Setup Node.js
+        if: github.event.inputs.action != 'setup-baseline'
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
       - name: Install Node dependencies
+        if: github.event.inputs.action != 'setup-baseline'
         run: npm install
 
       - name: Build PPTX and HTML
+        if: github.event.inputs.action != 'setup-baseline'
         run: node build.js
         env:
           BUILD_MONTH: ${{ github.event.inputs.month }}
 
       # ── PDF: Convert PPTX → PDF ───────────────────────────────────────────
       - name: Convert PPTX to PDF
+        if: github.event.inputs.action != 'setup-baseline'
         run: |
           sudo apt-get install -y libreoffice --no-install-recommends -qq
           libreoffice --headless --convert-to pdf reports/*.pptx --outdir reports/
