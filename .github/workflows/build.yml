@@ -2,7 +2,7 @@ name: Build OYA Monthly Report
 
 on:
   schedule:
-    - cron: '0 23 5 * *'   # 11pm UTC on the 5th of every month
+    - cron: '0 23 5 * *'  # 11pm UTC on the 5th of every month
   push:
     paths:
       - 'data/**.json'
@@ -16,16 +16,27 @@ on:
         options:
           - process-month
           - setup-baseline
+          - reprocess-all
       month:
-        description: 'Month to process (e.g. 2026-02). Only used for process-month, leave blank for prior month.'
+        description: 'Month to process (e.g. 2026-02). Used for process-month only.'
         required: false
+      from_month:
+        description: 'Reprocess from this month onwards (e.g. 2026-01). Used for reprocess-all only.'
+        required: false
+      skip_pdf:
+        description: 'Skip PDF conversion (faster). Used for reprocess-all.'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
 
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -40,13 +51,21 @@ jobs:
           key: pip-${{ hashFiles('requirements.txt') }}
           restore-keys: pip-
 
+      # ── CACHE: node_modules ───────────────────────────────────────────────
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-${{ hashFiles('package-lock.json', 'package.json') }}
+          restore-keys: node-
+
       # ── CACHE: LibreOffice ────────────────────────────────────────────────
       - name: Cache LibreOffice
         id: cache-libreoffice
         uses: actions/cache@v4
         with:
           path: /usr/lib/libreoffice
-          key: libreoffice-ubuntu-latest
+          key: libreoffice-ubuntu-24
 
       # ── PYTHON ────────────────────────────────────────────────────────────
       - name: Setup Python
@@ -67,6 +86,23 @@ jobs:
           if [ "$ACTION" = "setup-baseline" ]; then
             echo "Running setup-baseline..."
             python process.py setup-baseline
+
+          elif [ "$ACTION" = "reprocess-all" ]; then
+            FROM="${{ github.event.inputs.from_month }}"
+            ALL_MONTHS=$(ls data/*.json 2>/dev/null | grep -oE '[0-9]{4}-[0-9]{2}' | sort)
+            if [ -z "$ALL_MONTHS" ]; then
+              echo "No month data files found."
+              exit 1
+            fi
+            for MONTH in $ALL_MONTHS; do
+              if [ -n "$FROM" ] && [[ "$MONTH" < "$FROM" ]]; then
+                echo "Skipping $MONTH (before from_month $FROM)"
+                continue
+              fi
+              echo "Processing $MONTH..."
+              python process.py $MONTH
+            done
+
           else
             if [ -n "${{ github.event.inputs.month }}" ]; then
               MONTH="${{ github.event.inputs.month }}"
@@ -104,24 +140,37 @@ jobs:
 
       # ── PDF ───────────────────────────────────────────────────────────────
       - name: Install LibreOffice (if not cached)
-        if: github.event.inputs.action != 'setup-baseline' && steps.cache-libreoffice.outputs.cache-hit != 'true'
+        if: |
+          github.event.inputs.action != 'setup-baseline' &&
+          github.event.inputs.skip_pdf != 'true' &&
+          steps.cache-libreoffice.outputs.cache-hit != 'true'
         run: sudo apt-get install -y libreoffice --no-install-recommends -qq
 
       - name: Convert PPTX to PDF
-        if: github.event.inputs.action != 'setup-baseline'
+        if: |
+          github.event.inputs.action != 'setup-baseline' &&
+          github.event.inputs.skip_pdf != 'true'
         run: |
-          if [ -n "${{ github.event.inputs.month }}" ]; then
+          ACTION="${{ github.event.inputs.action }}"
+          if [ "$ACTION" = "reprocess-all" ]; then
+            for PPTX in reports/*.pptx; do
+              echo "Converting: $PPTX"
+              libreoffice --headless --convert-to pdf "$PPTX" --outdir reports/
+            done
+          elif [ -n "${{ github.event.inputs.month }}" ]; then
             PPTX="reports/${{ github.event.inputs.month }}.pptx"
+            echo "Converting: $PPTX"
+            libreoffice --headless --convert-to pdf "$PPTX" --outdir reports/
           else
             PPTX=$(ls -t reports/*.pptx | head -1)
+            echo "Converting: $PPTX"
+            libreoffice --headless --convert-to pdf "$PPTX" --outdir reports/
           fi
-          echo "Converting: $PPTX"
-          libreoffice --headless --convert-to pdf "$PPTX" --outdir reports/
 
       # ── COMMIT ────────────────────────────────────────────────────────────
       - name: Commit outputs
         run: |
-          git config user.name  "github-actions[bot]"
+          git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add index.html reports/ data/
           git diff --staged --quiet || git commit -m "Auto-build: $(date +'%Y-%m-%d %H:%M') UTC"
