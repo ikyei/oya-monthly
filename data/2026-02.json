@@ -39,7 +39,13 @@
     "fuel_cost_usd": -31621.20279,
     "prior_fuel_cost_usd": -40015.11878,
     "vehicle_cost_usd": -6012.981302,
-    "prior_vehicle_cost_usd": -8362.350403
+    "prior_vehicle_cost_usd": -8362.350403,
+    "prior_total_apps": 14358,
+    "prior_num_teams": 139,
+    "prior_total_approvals": 13848,
+    "num_loans": 12698,
+    "median_tat_days": 2,
+    "prior_median_tat_days": 2
   },
   "KE": {
     "exchange_rate": 129,
@@ -80,7 +86,13 @@
     "fuel_cost_usd": -16603.24992,
     "prior_fuel_cost_usd": -17298.99326,
     "vehicle_cost_usd": -3733.829457,
-    "prior_vehicle_cost_usd": -2264.176097
+    "prior_vehicle_cost_usd": -2264.176097,
+    "prior_total_apps": 11100,
+    "prior_num_teams": 100,
+    "prior_total_approvals": 9891,
+    "num_loans": 8095,
+    "median_tat_days": 2,
+    "prior_median_tat_days": 3
   },
   "UG": {
     "exchange_rate": 3560,
@@ -121,7 +133,13 @@
     "fuel_cost_usd": -3873.595506,
     "prior_fuel_cost_usd": -3416.098226,
     "vehicle_cost_usd": -1183.988764,
-    "prior_vehicle_cost_usd": -886.766712
+    "prior_vehicle_cost_usd": -886.766712,
+    "prior_total_apps": 1760,
+    "prior_num_teams": 39,
+    "prior_total_approvals": 1559,
+    "num_loans": 2809,
+    "median_tat_days": 5,
+    "prior_median_tat_days": 3
   },
   "SL": {
     "exchange_rate": 22.8126,
@@ -162,7 +180,13 @@
     "fuel_cost_usd": -4794.937885,
     "prior_fuel_cost_usd": -4652.53039,
     "vehicle_cost_usd": -196.647467,
-    "prior_vehicle_cost_usd": -678.962566
+    "prior_vehicle_cost_usd": -678.962566,
+    "prior_total_apps": 1888,
+    "prior_num_teams": 33,
+    "prior_total_approvals": 1569,
+    "num_loans": 1436,
+    "median_tat_days": 6,
+    "prior_median_tat_days": 6
   },
   "NG": {
     "exchange_rate": 1350,
@@ -203,7 +227,13 @@
     "fuel_cost_usd": -2149.792593,
     "prior_fuel_cost_usd": -1908.45942,
     "vehicle_cost_usd": -1760,
-    "prior_vehicle_cost_usd": -2460.072464
+    "prior_vehicle_cost_usd": -2460.072464,
+    "prior_total_apps": 1185,
+    "prior_num_teams": 36,
+    "prior_total_approvals": 733,
+    "num_loans": 868,
+    "median_tat_days": 4,
+    "prior_median_tat_days": 3
   },
   "commentary": {
     "apps": null,
