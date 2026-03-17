@@ -239,6 +239,8 @@
     "apps": null,
     "efficiency": null,
     "disbursements": null,
-    "loan_book": null
+    "loan_book": null,
+    "tat": null,
+    "financials": null
   }
 }
