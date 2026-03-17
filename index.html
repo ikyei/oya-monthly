@@ -199,6 +199,21 @@
     .table-block { background: var(--surface); border: 1px solid var(--border); border-radius: 3px; margin-bottom: 1.1rem; overflow: hidden; }
     .tbl-title { background: var(--cream); border-bottom: 1px solid var(--border); border-left: 4px solid var(--brown); padding: 0.55rem 1rem; font-size: 0.75rem; font-weight: 700; color: var(--brown); text-transform: uppercase; letter-spacing: 0.06em; }
     .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    /* Paired columns: tight left padding on companion col to visually group metric+change */
+    .tbl-t1 th:nth-child(3), .tbl-t1 td:nth-child(3),
+    .tbl-t1 th:nth-child(7), .tbl-t1 td:nth-child(7) { padding-left: 4px; }
+    .tbl-t2 th:nth-child(3), .tbl-t2 td:nth-child(3),
+    .tbl-t2 th:nth-child(5), .tbl-t2 td:nth-child(5),
+    .tbl-t2 th:nth-child(7), .tbl-t2 td:nth-child(7) { padding-left: 4px; }
+    .tat-table th:nth-child(3), .tat-table td:nth-child(3),
+    .tat-table th:nth-child(5), .tat-table td:nth-child(5) { padding-left: 4px; }
+    .tbl-t4 th:nth-child(3), .tbl-t4 td:nth-child(3),
+    .tbl-t4 th:nth-child(5), .tbl-t4 td:nth-child(5) { padding-left: 4px; }
+    .tat-table th:nth-child(1), .tat-table td:nth-child(1) { width: 30%; }
+    .tat-table th:nth-child(2), .tat-table td:nth-child(2) { width: 22%; }
+    .tat-table th:nth-child(3), .tat-table td:nth-child(3) { width: 10%; text-align: center; }
+    .tat-table th:nth-child(4), .tat-table td:nth-child(4) { width: 22%; }
+    .tat-table th:nth-child(5), .tat-table td:nth-child(5) { width: 16%; }
     table { width: 100%; border-collapse: collapse; min-width: 480px; }
     thead tr { background: var(--brown); }
     thead th { padding: 0.55rem 0.8rem; text-align: center; font-size: 0.85rem; font-weight: 600; color: var(--cream); letter-spacing: 0.04em; white-space: nowrap; }
@@ -290,7 +305,7 @@
       <div class="table-block">
         <div class="tbl-title">Loan Applications & Assessment Efficiency</div>
         <div class="tbl-wrap"><table>
-          <thead><tr><th>Country</th><th>Apps / Team</th><th>vs Prior Month</th><th>Applications</th><th>Approvals</th><th>Approval Rate</th><th>vs Last Month</th></tr></thead>
+          <thead><tr><th>Country</th><th>Apps / Team</th><th>vs Last Month</th><th>Applications</th><th>Approvals</th><th>Approval Rate</th><th>Trend</th></tr></thead>
           <tbody>
       <tr>
         <td class="country">Tanzania</td>
@@ -300,8 +315,6 @@
         <td>12,674</td>
         <td>94.5%</td>
         <td class="neg">↓</td>
-        <td>—</td>
-        <td class="">—</td>
       </tr>
       <tr>
         <td class="country">Kenya</td>
@@ -311,8 +324,6 @@
         <td>8,096</td>
         <td>93.3%</td>
         <td class="pos">↑</td>
-        <td>—</td>
-        <td class="">—</td>
       </tr>
       <tr>
         <td class="country">Uganda</td>
@@ -322,8 +333,6 @@
         <td>2,840</td>
         <td>97.3%</td>
         <td class="pos">↑</td>
-        <td>—</td>
-        <td class="">—</td>
       </tr>
       <tr>
         <td class="country">Sierra Leone</td>
@@ -333,8 +342,6 @@
         <td>1,423</td>
         <td>83.3%</td>
         <td class="pos">↑</td>
-        <td>—</td>
-        <td class="">—</td>
       </tr>
       <tr>
         <td class="country">Nigeria</td>
@@ -344,8 +351,6 @@
         <td>904</td>
         <td>63.3%</td>
         <td class="pos">↑</td>
-        <td>—</td>
-        <td class="">—</td>
       </tr><tr class="total-row">
       <td>Group Total</td>
       <td>81</td>
@@ -354,15 +359,13 @@
       <td>25,937</td>
       <td>92.1%</td>
       <td class="pos">↑</td>
-      <td>—</td>
-      <td class="">—</td>
     </tr></tbody>
         </table></div>
       </div>
 
       <div class="table-block">
         <div class="tbl-title">Disbursements</div>
-        <div class="tbl-wrap"><table>
+        <div class="tbl-wrap"><table class="tbl-t2">
           <thead><tr><th>Country</th><th>Total Disbursed</th><th>vs Prior</th><th>Avg Loan Size</th><th>vs Prior</th><th>Disb / Team</th><th>vs Prior</th></tr></thead>
           <tbody>
       <tr>
@@ -416,15 +419,15 @@
       <td>$231</td>
       <td class="pos">+4.2%</td>
       <td>74</td>
-      <td class="">—</td>
+      <td class="neg">-6.3%</td>
     </tr></tbody>
         </table></div>
       </div>
 
       <div class="table-block">
         <div class="tbl-title">Turnaround Time &amp; Loan Book</div>
-        <div class="tbl-wrap"><table>
-          <thead><tr><th>Country</th><th>Avg Turnaround Time</th><th>Trend</th><th>Loan Book</th><th>vs Prior</th></tr></thead>
+        <div class="tbl-wrap"><table class="tat-table">
+          <thead><tr><th>Country</th><th>Avg Turnaround Time</th><th>Trend</th><th>Loan Book</th><th>vs Last Month</th></tr></thead>
           <tbody>
       <tr>
         <td class="country">Tanzania</td>
@@ -472,8 +475,8 @@
 
       <div class="table-block">
         <div class="tbl-title">Default Rates</div>
-        <div class="tbl-wrap"><table>
-          <thead><tr><th>Country</th><th>Chronic Rate</th><th>vs Last Month</th><th>PAR 30</th><th>vs Last Month</th></tr></thead>
+        <div class="tbl-wrap"><table class="tbl-t4">
+          <thead><tr><th>Country</th><th>Chronic Rate</th><th>Trend</th><th>PAR 30</th><th>Trend</th></tr></thead>
           <tbody>
       <tr>
         <td class="country">Sierra Leone</td>
@@ -614,7 +617,7 @@
       <div class="table-block">
         <div class="tbl-title">Loan Applications & Assessment Efficiency</div>
         <div class="tbl-wrap"><table>
-          <thead><tr><th>Country</th><th>Apps / Team</th><th>vs Prior Month</th><th>Applications</th><th>Approvals</th><th>Approval Rate</th><th>vs Last Month</th></tr></thead>
+          <thead><tr><th>Country</th><th>Apps / Team</th><th>vs Last Month</th><th>Applications</th><th>Approvals</th><th>Approval Rate</th><th>Trend</th></tr></thead>
           <tbody>
       <tr>
         <td class="country">Kenya</td>
@@ -623,8 +626,6 @@
         <td>11,100</td>
         <td>9,891</td>
         <td>89.1%</td>
-        <td class="">—</td>
-        <td>—</td>
         <td class="">—</td>
       </tr>
       <tr>
@@ -635,8 +636,6 @@
         <td>13,848</td>
         <td>96.4%</td>
         <td class="">—</td>
-        <td>—</td>
-        <td class="">—</td>
       </tr>
       <tr>
         <td class="country">Sierra Leone</td>
@@ -645,8 +644,6 @@
         <td>1,888</td>
         <td>1,569</td>
         <td>83.1%</td>
-        <td class="">—</td>
-        <td>—</td>
         <td class="">—</td>
       </tr>
       <tr>
@@ -657,8 +654,6 @@
         <td>1,559</td>
         <td>88.6%</td>
         <td class="">—</td>
-        <td>—</td>
-        <td class="">—</td>
       </tr>
       <tr>
         <td class="country">Nigeria</td>
@@ -668,8 +663,6 @@
         <td>733</td>
         <td>61.9%</td>
         <td class="">—</td>
-        <td>—</td>
-        <td class="">—</td>
       </tr><tr class="total-row">
       <td>Group Total</td>
       <td>87</td>
@@ -678,15 +671,13 @@
       <td>27,600</td>
       <td>91.1%</td>
       <td class="">—</td>
-      <td>—</td>
-      <td class="">—</td>
     </tr></tbody>
         </table></div>
       </div>
 
       <div class="table-block">
         <div class="tbl-title">Disbursements</div>
-        <div class="tbl-wrap"><table>
+        <div class="tbl-wrap"><table class="tbl-t2">
           <thead><tr><th>Country</th><th>Total Disbursed</th><th>vs Prior</th><th>Avg Loan Size</th><th>vs Prior</th><th>Disb / Team</th><th>vs Prior</th></tr></thead>
           <tbody>
       <tr>
@@ -747,8 +738,8 @@
 
       <div class="table-block">
         <div class="tbl-title">Turnaround Time &amp; Loan Book</div>
-        <div class="tbl-wrap"><table>
-          <thead><tr><th>Country</th><th>Avg Turnaround Time</th><th>Trend</th><th>Loan Book</th><th>vs Prior</th></tr></thead>
+        <div class="tbl-wrap"><table class="tat-table">
+          <thead><tr><th>Country</th><th>Avg Turnaround Time</th><th>Trend</th><th>Loan Book</th><th>vs Last Month</th></tr></thead>
           <tbody>
       <tr>
         <td class="country">Tanzania</td>
@@ -796,8 +787,8 @@
 
       <div class="table-block">
         <div class="tbl-title">Default Rates</div>
-        <div class="tbl-wrap"><table>
-          <thead><tr><th>Country</th><th>Chronic Rate</th><th>vs Last Month</th><th>PAR 30</th><th>vs Last Month</th></tr></thead>
+        <div class="tbl-wrap"><table class="tbl-t4">
+          <thead><tr><th>Country</th><th>Chronic Rate</th><th>Trend</th><th>PAR 30</th><th>Trend</th></tr></thead>
           <tbody>
       <tr>
         <td class="country">Sierra Leone</td>
