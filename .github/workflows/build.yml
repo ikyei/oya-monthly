@@ -62,6 +62,7 @@ jobs:
       # ── CACHE: LibreOffice ────────────────────────────────────────────────
       - name: Cache LibreOffice
         id: cache-libreoffice
+        continue-on-error: true
         uses: actions/cache@v4
         with:
           path: /usr/lib/libreoffice
@@ -126,7 +127,7 @@ jobs:
         if: github.event.inputs.action != 'setup-baseline'
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: Install Node dependencies
         if: github.event.inputs.action != 'setup-baseline'
