@@ -2,7 +2,7 @@ name: Build OYA Monthly Report
 
 on:
   schedule:
-    - cron: '0 23 5 * *'  # 11pm UTC on the 5th of every month
+    - cron: '0 23 5 * *'
   push:
     paths:
       - 'data/**.json'
@@ -43,7 +43,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      # ── CACHE: pip ────────────────────────────────────────────────────────
       - name: Cache pip dependencies
         continue-on-error: true
         uses: actions/cache@v4
@@ -52,7 +51,6 @@ jobs:
           key: pip-${{ hashFiles('requirements.txt') }}
           restore-keys: pip-
 
-      # ── CACHE: node_modules ───────────────────────────────────────────────
       - name: Cache node_modules
         continue-on-error: true
         uses: actions/cache@v4
@@ -61,7 +59,6 @@ jobs:
           key: node-${{ hashFiles('package-lock.json', 'package.json') }}
           restore-keys: node-
 
-      # ── CACHE: LibreOffice ────────────────────────────────────────────────
       - name: Cache LibreOffice
         id: cache-libreoffice
         continue-on-error: true
@@ -70,7 +67,6 @@ jobs:
           path: /usr/lib/libreoffice
           key: libreoffice-ubuntu-24
 
-      # ── PYTHON ────────────────────────────────────────────────────────────
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -124,7 +120,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # ── NODE ──────────────────────────────────────────────────────────────
       - name: Setup Node.js
         if: github.event.inputs.action != 'setup-baseline'
         uses: actions/setup-node@v4
@@ -141,13 +136,12 @@ jobs:
         env:
           BUILD_MONTH: ${{ github.event.inputs.month }}
 
-      # ── PDF ───────────────────────────────────────────────────────────────
       - name: Install LibreOffice (if not cached)
         if: |
           github.event.inputs.action != 'setup-baseline' &&
           github.event.inputs.skip_pdf != 'true' &&
           steps.cache-libreoffice.outputs.cache-hit != 'true'
-        run: sudo apt-get install -y libreoffice --no-install-recommends -qq
+        run: sudo apt-get update -qq && sudo apt-get install -y libreoffice --no-install-recommends -qq --fix-missing
 
       - name: Convert PPTX to PDF
         if: |
@@ -170,7 +164,6 @@ jobs:
             libreoffice --headless --convert-to pdf "$PPTX" --outdir reports/
           fi
 
-      # ── COMMIT ────────────────────────────────────────────────────────────
       - name: Commit outputs
         run: |
           git config user.name "github-actions[bot]"
