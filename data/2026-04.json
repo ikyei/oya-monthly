@@ -44,7 +44,7 @@
     "prior_num_teams": 139,
     "prior_total_approvals": 12574,
     "num_loans": 11122,
-    "median_tat_days": 12,
+    "median_tat_days": null,
     "prior_median_tat_days": 3
   },
   "KE": {
