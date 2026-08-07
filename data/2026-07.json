@@ -57,9 +57,9 @@
     "total_approvals": 6976,
     "approval_rate": 0.922385,
     "prior_approval_rate": 0.875402,
-    "total_disb_usd": 0,
-    "disb_per_team": 0,
-    "avg_loan_size_usd": 0,
+    "total_disb_usd": 1934748.975,
+    "disb_per_team": 87,
+    "avg_loan_size_usd": 277.343603,
     "prior_total_disb_usd": 1767763.361,
     "prior_disb_per_team": 80,
     "prior_avg_loan_size_usd": 270.548418,
@@ -90,8 +90,8 @@
     "prior_total_apps": 7464,
     "prior_num_teams": 112,
     "prior_total_approvals": 6534,
-    "num_loans": 0,
-    "median_tat_days": null,
+    "num_loans": 6976,
+    "median_tat_days": 3,
     "prior_median_tat_days": 3
   },
   "UG": {
